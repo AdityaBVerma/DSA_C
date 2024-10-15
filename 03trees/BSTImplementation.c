@@ -14,6 +14,14 @@ struct Node* newNode ( int item) {
     return newNode;
 }
 
+struct Node* getSuccessor (struct Node* curr) {
+    curr = curr->right;
+    while (curr!=NULL && curr->left!=NULL){
+        curr = curr->left;
+    }
+    return curr;
+}
+
 struct Node* insertNode (struct Node* node, int x){
     if (node == NULL) return newNode(x);
     
@@ -27,6 +35,34 @@ struct Node* insertNode (struct Node* node, int x){
     return node;
 }
 
+struct Node* delNode ( struct Node* root, int x){
+    if (root == NULL ) return root;
+    
+    if (root->key > x) {
+        root->left = delNode(root->left, x);
+    } else if (root->key < x) {
+        root->right = delNode(root->right, x);
+    } else {
+        
+        if ( root->left == NULL) {
+            struct Node* temp = root->right;
+            free(root);
+            return temp;
+        }
+        if (root->right == NULL) {
+            struct Node* temp = root->left;
+            free(root);
+            return temp;
+        }
+        
+        struct Node* succ = getSuccessor(root);
+        root->key = succ->key;
+        root->right = delNode(root->right, succ->key);
+        
+    }
+    return root;
+}
+
 void inorder (struct Node* node) {
     if (node!=NULL) {
         inorder(node->left);
@@ -36,7 +72,7 @@ void inorder (struct Node* node) {
 }
 
 int main() {
-    // Write C code here
+    
     struct Node* root = newNode(50);
     root = insertNode(root, 30);
     root = insertNode(root, 20);
@@ -46,6 +82,9 @@ int main() {
     root = insertNode(root, 40);
     root = insertNode(root, 80);
     inorder(root);
-
+    root = delNode(root, 60);
+    printf("\n");
+    inorder(root);
+    
     return 0;
 }
