@@ -1,0 +1,30 @@
+
+const size_t BUFFER_SIZE = 256 * 1024 * 1024; // 256 MB
+alignas(std::max_align_t) char* buffer = nullptr;
+size_t buffer_pos = 0;
+
+void init_buffer() {
+    if (!buffer) {
+        buffer = static_cast<char*>(std::aligned_alloc(alignof(std::max_align_t), BUFFER_SIZE));
+        if (!buffer) throw std::bad_alloc();
+    }
+}
+
+void* operator new(size_t size) {
+    init_buffer();
+    constexpr std::size_t alignment = alignof(std::max_align_t);
+    size_t padding = (alignment - (buffer_pos % alignment)) % alignment;
+    size_t total_size = size + padding;
+
+    if (buffer_pos + total_size > BUFFER_SIZE) {
+        throw std::bad_alloc();
+    }
+
+    char* aligned_ptr = buffer + buffer_pos + padding;
+    buffer_pos += total_size;
+    return aligned_ptr;
+}
+
+void operator delete(void* ptr) noexcept {}
+void operator delete(void* ptr, unsigned long) noexcept {}
+void operator delete[](void* ptr) noexcept {}
