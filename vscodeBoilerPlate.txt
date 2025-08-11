@@ -1,0 +1,49 @@
+#include <bits/stdc++.h>
+#include <chrono>
+#include <windows.h>
+#include <psapi.h>
+
+using namespace std;
+using namespace std::chrono;
+
+void printMemoryUsageMB() {
+    PROCESS_MEMORY_COUNTERS_EX pmc;
+    if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc))) {
+        SIZE_T memUsed = pmc.WorkingSetSize; // Bytes
+        cout << fixed << setprecision(2);
+        cout << "Memory used: " << (memUsed / (1024.0 * 1024.0)) << " MB" << endl;
+    } else {
+        cerr << "Failed to get process memory info.\n";
+    }
+}
+
+// ====================== Functions ======================
+
+
+
+// ====================== Test Cases ======================
+
+void runTestCase() {
+    
+}
+
+// ====================== Main Function ======================
+
+int main() {
+    auto start = high_resolution_clock::now();
+
+    runTestCase();
+
+    auto end = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(end - start);
+
+    cout << "Time taken: " << duration.count() << " microseconds\n";
+    printMemoryUsageMB();
+
+    return 0;
+}
+
+
+/*
+    cd "c:\Users\adity\OneDrive\Desktop\dsa\" ; if ($?) { g++ test.cpp -o exeFiles/test.exe -lpsapi } ; if ($?) { .\exeFiles\test.exe }
+*/
